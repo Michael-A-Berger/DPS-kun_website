@@ -11,6 +11,7 @@ const urlStructGet = {
   '/': htmlHandler.getIndexPage,
   '/index.css': htmlHandler.getIndexStyle,
   '/api/': apiHandler.GetSongs,
+  notFound: apiHandler.NotFound,
 };
 
 // HandleGET()
@@ -20,6 +21,8 @@ const HandleGET = (rq, rp) => {
 
   if (urlStructGet[parsedUrl.pathname]) {
     urlStructGet[parsedUrl.pathname](rq, rp, params);
+  } else {
+    urlStructGet.notFound(rq, rp);
   }
 };
 
