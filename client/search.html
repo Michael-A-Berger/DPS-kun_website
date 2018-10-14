@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>DPS-kun - Song Search</title>
+  <link rel="stylesheet" type="text/css" href="/index.css">
+  <meta charset='UTF-8'>
+  <script src="search-song.js"></script>
+  <script src="format.js"></script>
+  <script>
+    var searchbar = {};
+    var searchResults = {};
+    var songDisplay = {};
+    var lastSearch = '';
+    var lastSearchResults = [];
+    
+    // OnLoad()
+    window.onload = function() {
+      // Getting the HTML objects
+      searchbar = document.getElementById('searchbar');
+      searchResults = document.getElementsByClassName('search-results')[0];
+      songDisplay = document.getElementsByClassName('song-display')[0];
+      
+      // Setting the search bar enter function
+      searchbar.onkeypress = function(event) {
+        if (event.keyCode === 13 && searchbar.value.length > 0) {
+          lastSearch = searchbar.value.toLowerCase();
+          var xhr = new XMLHttpRequest();
+          SearchDatabase(xhr, lastSearch, responseSuccess);
+        }
+      };
+    };
+    
+    // document.OnClick()
+    document.onclick = function(e) {
+      searchResults.style.display = 'none';
+    };
+    
+    // responseSuccess()
+    function responseSuccess(response) {
+      console.dir(response);
+      if (response.error || response.array.length < 1) {
+        searchResults.innerHTML = '<p>No matches for "' + lastSearch + '" were found.</p>';
+      } else {
+        lastSearchResults = response.array;
+        var formattedResults = FormatSearchResults(response.array, lastSearch);
+        searchResults.style.display = 'block';
+        searchResults.innerHTML = formattedResults;
+        setResultOnClickEvents();
+      }
+    }
+    
+    // setResultOnClickEvents()
+    function setResultOnClickEvents() {
+      var songResults = document.getElementsByClassName('search-result');
+      for (var num = 0; num < songResults.length; num++) {
+        songResults[num].onclick = function(e) {
+          var parentToPass = e.target;
+          while (parentToPass !== undefined && !parentToPass.classList.contains('search-result')) {
+            parentToPass = parentToPass.parentNode;
+          }
+          chooseSong(parentToPass);
+        };
+      }
+    }
+    
+    // chooseSong()
+    function chooseSong(searchElement) {
+      var idElement = searchElement.getElementsByClassName('song-id')[0];
+      var id = parseInt(idElement.innerHTML.replace(/[^0-9]+/g, ''));
+      var specificSong;
+      for (var num = 0; num < lastSearchResults.length; num++) {
+        if (lastSearchResults[num].id === id) {
+          specificSong = lastSearchResults[num];
+          num = lastSearchResults.length;
+        }
+      }
+      songDisplay.innerHTML = FormatDisplaySong(specificSong);
+    }
+  </script>
+</head>
+<body>
+  <div class="top">
+    <h1>DPS-KUN</h1>
+    <h2>A IIDX Companion Website</h2>
+    <div class='navbar'>
+      <a href='/'>Random</a>
+      <a href='/search' class='navbar-selected'>Song Search</a>
+      <a href='/playlists'>Playlists</a>
+      <a href='/create_playlist'>Create Playlist</a>
+      <a href='/api_guide'>API Guide</a>
+    </div>
+  </div>
+  <section class="content">
+    <p>This page lets you search songs from <span class='game-name'>beatmania IIDX 25 CANNON BALLERS</span></p>
+    <p>Press "Enter" to search the database.</p>
+    <input id="searchbar" type="text" placeholder="Search..."></input>
+    <div class="search-results"></div>
+    <h2>Chosen Song:</h2>
+    <div class="song-display"></div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

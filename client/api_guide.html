@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>DPS-kun - API Guide</title>
+  <link rel="stylesheet" type="text/css" href="/index.css">
+  <meta charset='UTF-8'>
+</head>
+<body>
+  <div class="top">
+    <h1>DPS-KUN</h1>
+    <h2>A IIDX Companion Website</h2>
+    <div class='navbar'>
+      <a href='/'>Random</a>
+      <a href='/search'>Song Search</a>
+      <a href='/playlists'>Playlists</a>
+      <a href='/create_playlist'>Create Playlist</a>
+      <a href='/api_guide' class='navbar-selected'>API Guide</a>
+    </div>
+  </div>
+  <div class="content">
+    <h1>How To Use The DPS-KUN API</h1>
+    <p>Below are the requests that you can make and what they retrieve:</p>
+    <h2>/api/?random</h2>
+    <p>Gets a random song from the database and returns it as a JSON object.</p>
+    <h2>/api/?search=[term]</h2>
+    <p>Searches the database for songs containing the search term and returns a
+    JSON object with matching results. Searches are ranked by song name first 
+    and song artist second, followed by the other song properties.</p>
+    <h2>/api/?list=[ID#1,ID#2,ID#3,etc.]</h2>
+    <p>Returns a JSON object containing an array of songs, which are defined by 
+    the given parameter of comma-separated song IDs. To find what songs have 
+    which ID, use the "Song Search" page.</p>
+    <h2>/api/?playlists</h2>
+    <p>Returns a JSON object containing an array of all the published DPS-KUN
+    playlists. The playlist JSON object consists of properties "name" (literally 
+    the name of the playlist) and "songs" (an array of the songs in the playlist).</p>
+    <h2>/api/addlist</h2>
+    <p>A POST command to add a playlist to this website. Expects the posted 
+    message to be in this format:</p>
+    <p>name=[name]&amp;list=[ID#1,ID#2,ID#3,etc.]</p>
+    <h2>ERROR CHECKING</h2>
+    <p>If an API call of either GET or POST fails, the returned parameter is a JSON 
+    object with an 'error' property. This property is a string that explains why the 
+    GET/POST could not happen.</p>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

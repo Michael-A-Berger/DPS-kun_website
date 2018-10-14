@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>DPS-kun - Playlists</title>
+  <link rel="stylesheet" type="text/css" href="/index.css">
+  <meta charset='UTF-8'>
+  <script src="list.js"></script>
+  <script src="format.js"></script>
+  <script>
+    var playlistsDiv = {};
+    
+    window.onload = function() {
+      // Getting the divs
+      playlistsDiv = document.getElementsByClassName('playlists')[0];
+      
+      // Getting the playlists
+      var xhr = new XMLHttpRequest();
+      GetUserLists(xhr, listSuccess);
+    };
+    
+    function listSuccess(response) {
+      var playlists = response.array;
+      if (playlists.length > 0) {
+        for (var num = 0; num < playlists.length; num++) {
+          playlistsDiv.innerHTML += FormatPlaylist(playlists[num]);
+        }
+      } else {
+        playlistsDiv.innerHTML += '<p>There are no user playlists! You could be the first.</p>';
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="top">
+    <h1>DPS-KUN</h1>
+    <h2>A IIDX Companion Website</h2>
+    <div class='navbar'>
+      <a href='/'>Random</a>
+      <a href='search'>Song Search</a>
+      <a href='playlists' class='navbar-selected'>Playlists</a>
+      <a href='create_playlist'>Create Playlist</a>
+      <a href='api_guide'>API Guide</a>
+    </div>
+  </div>
+  <div class="content">
+    <p>Below are playlists of songs that users have created.</p>
+    <p>To create your own playlist, click "Create Playlist" in the navigation bar.</p>
+    <h1>User Playlists:</h1>
+    <div class='playlists'>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

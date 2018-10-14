@@ -4,23 +4,70 @@
   <title>DPS-kun - The IIDX Song Selector</title>
   <link rel="stylesheet" type="text/css" href="/index.css">
   <meta charset='UTF-8'>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
-  <script type="text/babel">
+  <script src="search-song.js"></script>
+  <script src="format.js"></script>
+  <script>
+    var randomButton = {};
+    var songDisplay = {};
     
+    // window.onload()
+    window.onload = function() {
+      // Getting the HTML objects
+      randomButton = document.getElementById('random-button');
+      songDisplay = document.getElementsByClassName('song-display')[0];
+      
+      // Setting the random song function
+      randomButton.onclick = function() {
+        var xhr = new XMLHttpRequest();
+        GetRandomSong(xhr, randomResponse);
+      }
+    };
+    
+    function randomResponse(response) {
+      songDisplay.innerHTML = FormatDisplaySong(response);
+    }
   </script>
 </head>
 <body>
-  <section id="top">
+  <div class="top">
     <h1>DPS-KUN</h1>
     <h2>A IIDX Companion Website</h2>
-  </section>
-  <section id="content">
-    <p>This website gets a random song and chart from the game <span class='game-name'>beatmania IIDX 25 CANNON BALLERS</span></p>
-    <p>Included is a fully-functional API that lets users search a database of all currently-available songs.</p>
-    <p>Users can also create "Playlists" of songs that will be shared publicly on a separate web page.</p>
-    <p>Currently only getting a random song from the API and retrieving a song list are implemented.</p>
-    <p>To test getting a random song, append "/api/?random=1" to the address bar.</p>
-    <p>To test retrieving a song list, go to the address "/api/?list=X,Y,Z" where X, Y, and Z are numbers below 1208.</p>
-  </section>
+    <div class='navbar'>
+      <a href='/' class='navbar-selected'>Random</a>
+      <a href='/search'>Song Search</a>
+      <a href='/playlists'>Playlists</a>
+      <a href='/create_playlist'>Create Playlist</a>
+      <a href='/api_guide'>API Guide</a>
+    </div>
+  </div>
+  <div class="content">
+    <p>This website gets a random song and chart from the game <span class='game-name'>beatmania IIDX 25 CANNON BALLERS</span> (among other things)</p>
+    <button id="random-button">Get A Random IIDX Song</button>
+    <div class='song-display'></div>
+    <h2>About</h2>
+    <p>This website was created by Michael Berger to help <span class='game-name'>beatmania IIDX 25 CANNON BALLERS</span> players choose songs.</p>
+    <p>It introduces a web API that allows other developers to search and retrieve song information from the game.</p>
+    <p>The data was scrapped from the master list of IIDX 25 songs on RemyWiki.</p>
+  </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

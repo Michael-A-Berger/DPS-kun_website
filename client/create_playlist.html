@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>DPS-kun - Create Playlist</title>
+  <link rel="stylesheet" type="text/css" href="/index.css">
+  <meta charset='UTF-8'>
+  <script src="list.js"></script>
+  <script src="search-song.js"></script>
+  <script src="format.js"></script>
+  <script>
+    var searchbar = {};
+    var searchResults = {};
+    var chosenSongsDisplay = {};
+    var chosenName = {};
+    var submitButton = {};
+    var submitMessage = {};
+    var lastSearch = '';
+    var lastSearchResults = [];
+    
+    // OnLoad()
+    window.onload = function() {
+      // Getting the HTML object
+      searchbar = document.getElementById('searchbar');
+      searchResults = document.getElementsByClassName('search-results')[0];
+      chosenSongsDisplay = document.getElementsByClassName('chosen-songs')[0];
+      chosenName = document.getElementById('playlist-name');
+      submitButton = document.getElementById('submit-playlist');
+      submitMessage = document.getElementById('submit-message');
+      
+      // Setting the search bar enter function
+      searchbar.onkeypress = function(event) {
+        if (event.keyCode === 13 && searchbar.value.length > 0) {
+          lastSearch = searchbar.value.toLowerCase();
+          var xhr = new XMLHttpRequest();
+          SearchDatabase(xhr, lastSearch, searchResponse);
+        }
+      };
+      
+      // Setting the submit button function
+      submitButton.onclick = submitPlaylist;
+    };
+    
+    // document.OnClick()
+    document.onclick = function(e) {
+      searchResults.style.display = 'none';
+    };
+    
+    // searchResponse()
+    function searchResponse(response) {
+      if (response.error) {
+        searchResults.innerHTML = '<p>No matches for "' + lastSearch + '" were found.</p>';
+      } else {
+        lastSearchResults = response.array;
+        var formattedResults = FormatSearchResults(response.array, lastSearch);
+        searchResults.style.display = 'block';
+        searchResults.innerHTML = formattedResults;
+        setResultOnClickEvents();
+      }
+    }
+    
+    // setResultOnClickEvents()
+    function setResultOnClickEvents() {
+      var songResults = document.getElementsByClassName('search-result');
+      for (var num = 0; num < songResults.length; num++) {
+        songResults[num].onclick = function(e) {
+          var parentToPass = e.target;
+          while (parentToPass !== undefined && !parentToPass.classList.contains('search-result')) {
+            parentToPass = parentToPass.parentNode;
+          }
+          chooseSong(parentToPass);
+        };
+      }
+    }
+    
+    // chooseSong()
+    function chooseSong(searchElement) {
+      var idElement = searchElement.getElementsByClassName('song-id')[0];
+      var id = parseInt(idElement.innerHTML.replace(/[^0-9]+/g, ''));
+      var specificSong;
+      for (var num = 0; num < lastSearchResults.length; num++) {
+        if (lastSearchResults[num].id === id) {
+          specificSong = lastSearchResults[num];
+          num = lastSearchResults.length;
+        }
+      }
+      var displayString = '<div class="song-display">\n' + FormatDisplaySong(specificSong) + '\n';
+      displayString += '<br><button onclick="removeSong(' + specificSong.id + ');">Remove Song</button>\n';
+      displayString += '</div>\n';
+      chosenSongsDisplay.innerHTML += displayString;
+    }
+    
+    // removeSong()
+    function removeSong(idToRemove) {
+      var chosenSongs = chosenSongsDisplay.getElementsByClassName('display-song');
+      for (var num = 0; num < chosenSongs.length; num++) {
+        var songId = chosenSongs[num].getElementsByClassName('display-id')[0];
+        songId = parseInt(songId.innerHTML.replace(/[^0-9]+/g, ''));
+        if (songId === idToRemove) {
+          var parent = chosenSongs[num].parentNode;
+          chosenSongsDisplay.innerHTML = chosenSongsDisplay.innerHTML.replace(parent.outerHTML, '');
+          num = chosenSongs.length;
+        }
+      }
+    }
+    
+    // submitPlaylist()
+    function submitPlaylist() {
+      var canSubmit = true;
+      var submitError = '';
+      var chosenSongs = chosenSongsDisplay.getElementsByClassName('display-song');
+      
+      // IF the name is valid...
+      if (chosenName.value === '' || chosenName.value === undefined) {
+        canSubmit = false;
+        submitError = '<b>ERROR:</b> A playlist name must be entered before it can be published!';
+      }
+      
+      // IF there is at least 1 song in the list...
+      if (canSubmit && chosenSongs.length > 0) {
+      
+      } else if (chosenSongs.length < 1) {
+        canSubmit = false;
+        submitError = '<b>ERROR:</b> A playlist must have a least one song!';
+      }
+      
+      // IF no errors were found...
+      if (canSubmit) {
+        // Getting the song IDs
+        var songIds = [];
+        for (var num = 0; num < chosenSongs.length; num++) {
+          var id = chosenSongs[num].getElementsByClassName('display-id')[0];
+          id = parseInt(id.innerHTML.replace(/[^0-9]+/g, ''));
+          songIds.push(id);
+        }
+        
+        // Submitting the list
+        var xhr = new XMLHttpRequest();
+        var submitString = 'name=' + chosenName.value + '&list=';
+        for (var num = 0; num < songIds.length; num++) {
+          submitString += '' + songIds[num];
+          if (num < songIds.length - 1) {
+            submitString += ','
+          }
+        }
+        console.log(submitString);
+        AddList(xhr, submitString, submitResponse);
+      } else {
+        submitMessage.innerHTML = submitError;
+      }
+    }
+    
+    // submitResponse()
+    function submitResponse(response) {
+      console.dir(response);
+      if (response.error) {
+        submitMessage.innerHTML = '<b>ERROR:</b> ' + response.error;
+      } else if (response.success) {
+        submitMessage.innerHTML = 'Your playlist was created!';
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="top">
+    <h1>DPS-KUN</h1>
+    <h2>A IIDX Companion Website</h2>
+    <div class='navbar'>
+      <a href='/'>Random</a>
+      <a href='/search'>Song Search</a>
+      <a href='/playlists'>Playlists</a>
+      <a href='/create_playlist'  class='navbar-selected'>Create Playlist</a>
+      <a href='/api_guide'>API Guide</a>
+    </div>
+  </div>
+  <div class="content">
+    <p>Use the name entry and search bars to create a playlist of IIDX songs.</p>
+    <p>When your playlist is complete, use the "Submit Playlist" button at the bottom to make it public.</p>
+    <h3>Playlist Name:</h3>
+    <input id="playlist-name" type="text" placeholder="Enter name here..."></input>
+    <h3>Songs:</h3>
+    <input id="searchbar" type="text" placeholder="Search..."></input>
+    <div class="search-results"></div>
+    <div class='chosen-songs'></div>
+    <button id="submit-playlist">Submit Playlist</button>
+    <p id="submit-message"></p>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,15 +8,22 @@
   "description": "Retrieves and displays JSON objects of songs in Beatmania IIDX",
   "main": "./src/server.js",
   "scripts": {
-    "start": "node ./src/server.js",
-    "pretest": "eslint ./src --fix",
-    "test": "echo \"Tests Complete\""
+    "buffer": "echo ==================",
+    "build": "babel client-es6 --out-dir client",
+    "start": "node ./server/server.js",
+    "pretest": "npm run test-server & npm run buffer & npm run test-client",
+    "test-server": "eslint ./server --fix",
+    "test-client": "eslint ./client-es6 --fix",
+    "test": "echo +++ Tests Complete +++"
   },
   "author": "Michael Berger",
   "license": "UNLICENSED",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "eslint": "^5.6.1",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0"
-  }
+  },
+  "dependencies": {}
 }
